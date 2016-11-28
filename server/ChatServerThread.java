@@ -11,6 +11,7 @@ public class ChatServerThread extends Thread
    private DataInputStream  streamIn  =  null;
    private DataOutputStream streamOut = null;
    private volatile Thread  thread    = null;
+   public String username = "";
 
    public ChatServerThread(ChatServer _server, Socket _socket)
    {  super();

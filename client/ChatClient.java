@@ -43,13 +43,13 @@ public class ChatClient implements Runnable
    {  Thread thisThread = Thread.currentThread();
 
       try {
-         streamOut.writeUTF(username);
+         streamOut.writeUTF(username +  "#");
          streamOut.flush();
       } catch (IOException e) {
          // TODO Auto-generated catch block
          e.printStackTrace();
       }
-      
+
       while (thread == thisThread)
       while (thread != null)
       {  try

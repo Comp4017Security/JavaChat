@@ -56,12 +56,17 @@ public class ChatServer implements Runnable {
       return -1;
    }
    public synchronized void handle(long iD, String input)
-   {  if (input.equals(".bye"))
-      {  clients[findClient(iD)].send(".bye");
+   {  
+      ChatServerThread targetClient = clients[findClient(iD)];
+      if (targetClient.username.equals("")) {
+         targetClient.username = input + iD;
+      }
+      else if (input.equals(".bye"))
+      {  targetClient.send(".bye");
          remove(iD); }
       else
          for (int i = 0; i < clientCount; i++)
-            clients[i].send(iD + ": " + input);   
+            clients[i].send(targetClient.username + ": " + input);   
    }
    public synchronized void remove(long iD)
    {  int pos = findClient(iD);

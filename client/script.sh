@@ -1,3 +1,9 @@
 #!/bin/bash
 
-java -Djavax.net.ssl.trustStore=myKeystore -Djavax.net.ssl.trustStorePassword=111111 ChatClient 0.0.0.0 3000 jacky
+name=$1
+
+if [[ -n "$name" ]]; then
+	java -Djavax.net.ssl.trustStore=myKeystore -Djavax.net.ssl.trustStorePassword=111111 ChatClient 0.0.0.0 3000 $1
+else
+    echo "argument error"
+fi
