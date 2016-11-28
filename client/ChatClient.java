@@ -1,8 +1,10 @@
 import java.net.*;
 import java.io.*;
+import javax.net.ssl.*;
 
 public class ChatClient implements Runnable
-{  private Socket socket              = null;
+{  //private Socket socket              = null;
+   private SSLSocket socket = null;
    private volatile Thread thread     = null;
    private BufferedReader   console   = null;
    private DataOutputStream streamOut = null;
@@ -11,8 +13,12 @@ public class ChatClient implements Runnable
    public ChatClient(String serverName, int serverPort)
    {  System.out.println("Establishing connection. Please wait ...");
       try
-      {  socket = new Socket(serverName, serverPort);
+      {  //socket = new Socket(serverName, serverPort);
+
+         SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+         socket = (SSLSocket) sslsocketfactory.createSocket(serverName, serverPort);
          System.out.println("Connected: " + socket);
+
          start();
       }
       catch(UnknownHostException uhe)

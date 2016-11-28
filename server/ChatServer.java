@@ -1,27 +1,39 @@
 import java.net.*;
 import java.io.*;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
 
-public class ChatServer implements Runnable
-{  private ChatServerThread clients[] = new ChatServerThread[50];
-   private ServerSocket server = null;
+public class ChatServer implements Runnable {
+   
+   private ChatServerThread clients[] = new ChatServerThread[50];
+   //private ServerSocket server = null;
+   private SSLServerSocket sslserver;
    private volatile Thread  thread = null;
    private int clientCount = 0;
 
-   public ChatServer(int port)
-   {  try
-      {  System.out.println("Binding to port " + port + ", please wait  ...");
-         server = new ServerSocket(port);  
-         System.out.println("Server started: " + server);
-         start(); }
-      catch(IOException ioe)
-      {  System.out.println("Can not bind to port " + port + ": " + ioe.getMessage()); }
+   public ChatServer(int port) {  
+      
+      try {
+         
+         System.out.println("Binding to port " + port + ", please wait  ...");
+         //server = new ServerSocket(port); 
+         
+         SSLServerSocketFactory sslserversocketfactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+         sslserver = (SSLServerSocket) sslserversocketfactory.createServerSocket(port);
+
+         System.out.println("Server started: " + sslserver);
+         start();
+      } catch(IOException ioe) {
+         System.out.println("Can not bind to port " + port + ": " + ioe.getMessage());
+      }
    }
    public void run()
    {  Thread thisThread = Thread.currentThread();
       while (thread == thisThread)
       {  try
          {  System.out.println("Waiting for a client ..."); 
-            addThread(server.accept()); }
+            addThread((SSLSocket) sslserver.accept()); }
          catch(IOException ioe)
          {  System.out.println("Server accept error: " + ioe); stop(); }
       }

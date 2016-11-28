@@ -1,5 +1,8 @@
 import java.net.*;
 import java.io.*;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
 
 public class ChatServerThread extends Thread
 {  private ChatServer       server    = null;
