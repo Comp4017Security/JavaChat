@@ -49,25 +49,25 @@ public class ChatServer implements Runnable {
       {  thread = null;
       }
    }
-   private int findClient(int ID)
+   private int findClient(long iD)
    {  for (int i = 0; i < clientCount; i++)
-         if (clients[i].getID() == ID)
+         if (clients[i].getID() == iD)
             return i;
       return -1;
    }
-   public synchronized void handle(int ID, String input)
+   public synchronized void handle(long iD, String input)
    {  if (input.equals(".bye"))
-      {  clients[findClient(ID)].send(".bye");
-         remove(ID); }
+      {  clients[findClient(iD)].send(".bye");
+         remove(iD); }
       else
          for (int i = 0; i < clientCount; i++)
-            clients[i].send(ID + ": " + input);   
+            clients[i].send(iD + ": " + input);   
    }
-   public synchronized void remove(int ID)
-   {  int pos = findClient(ID);
+   public synchronized void remove(long iD)
+   {  int pos = findClient(iD);
       if (pos >= 0)
       {  ChatServerThread toTerminate = clients[pos];
-         System.out.println("Removing client thread " + ID + " at " + pos);
+         System.out.println("Removing client thread " + iD + " at " + pos);
          if (pos < clientCount-1)
             for (int i = pos+1; i < clientCount; i++)
                clients[i-1] = clients[i];

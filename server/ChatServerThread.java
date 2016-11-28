@@ -7,7 +7,7 @@ import javax.net.ssl.SSLSocket;
 public class ChatServerThread extends Thread
 {  private ChatServer       server    = null;
    private Socket           socket    = null;
-   private int              ID        = -1;
+   private long              ID        = -1;
    private DataInputStream  streamIn  =  null;
    private DataOutputStream streamOut = null;
    private volatile Thread  thread    = null;
@@ -16,7 +16,7 @@ public class ChatServerThread extends Thread
    {  super();
       server = _server;
       socket = _socket;
-      ID     = socket.getPort();
+      ID     = this.getId();
    }
    public void send(String msg)
    {   try
@@ -29,7 +29,7 @@ public class ChatServerThread extends Thread
           stopThread();
        }
    }
-   public int getID()
+   public long getID()
    {  return ID;
    }
    public void run()

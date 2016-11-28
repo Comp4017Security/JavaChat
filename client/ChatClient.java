@@ -9,25 +9,47 @@ public class ChatClient implements Runnable
    private BufferedReader   console   = null;
    private DataOutputStream streamOut = null;
    private ChatClientThread client    = null;
+   
+   private String username = "";
 
-   public ChatClient(String serverName, int serverPort)
-   {  System.out.println("Establishing connection. Please wait ...");
-      try
-      {  //socket = new Socket(serverName, serverPort);
-
-         SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-         socket = (SSLSocket) sslsocketfactory.createSocket(serverName, serverPort);
-         System.out.println("Connected: " + socket);
-
-         start();
-      }
-      catch(UnknownHostException uhe)
-      {  System.out.println("Host unknown: " + uhe.getMessage()); }
-      catch(IOException ioe)
-      {  System.out.println("Unexpected exception: " + ioe.getMessage()); }
+   public ChatClient(String serverName, int serverPort, String username)
+   {  
+      this.username = username;
+      create(serverName, serverPort);
    }
+   
+   public ChatClient(String serverName, int serverPort){
+      create(serverName, serverPort);
+   }
+   
+   private void create(String serverName, int serverPort) {
+      System.out.println("Establishing connection. Please wait ...");
+         try
+         {  //socket = new Socket(serverName, serverPort);
+
+            SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            socket = (SSLSocket) sslsocketfactory.createSocket(serverName, serverPort);
+            System.out.println("Connected: " + socket);
+
+            start();
+         }
+         catch(UnknownHostException uhe)
+         {  System.out.println("Host unknown: " + uhe.getMessage()); }
+         catch(IOException ioe)
+         {  System.out.println("Unexpected exception: " + ioe.getMessage()); }
+   }
+   
    public void run()
    {  Thread thisThread = Thread.currentThread();
+
+      try {
+         streamOut.writeUTF(username);
+         streamOut.flush();
+      } catch (IOException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+      
       while (thread == thisThread)
       while (thread != null)
       {  try
@@ -73,9 +95,9 @@ public class ChatClient implements Runnable
    }
    public static void main(String args[])
    {  ChatClient client = null;
-      if (args.length != 2)
-         System.out.println("Usage: java ChatClient host port");
+      if (args.length != 3)
+         System.out.println("Usage: java ChatClient host port username");
       else
-         client = new ChatClient(args[0], Integer.parseInt(args[1]));
+         client = new ChatClient(args[0], Integer.parseInt(args[1]), args[2]);
    }
 }
