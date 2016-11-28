@@ -12,12 +12,14 @@ public class ChatServerThread extends Thread
    private DataOutputStream streamOut = null;
    private volatile Thread  thread    = null;
    public String username = "";
+   private String IP ="";
 
    public ChatServerThread(ChatServer _server, Socket _socket)
    {  super();
       server = _server;
       socket = _socket;
       ID     = this.getId();
+      IP     = socket.getInetAddress().toString();
    }
    public void send(String msg)
    {   try
@@ -32,6 +34,9 @@ public class ChatServerThread extends Thread
    }
    public long getID()
    {  return ID;
+   }
+    public String getIP()
+   {  return IP;
    }
    public void run()
    {  System.out.println("Server Thread " + ID + " running.");

@@ -3,7 +3,7 @@ import java.io.*;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
-
+import java.util.Hashtable;
 public class ChatServer implements Runnable {
    
    private ChatServerThread clients[] = new ChatServerThread[50];
@@ -11,6 +11,8 @@ public class ChatServer implements Runnable {
    private SSLServerSocket sslserver;
    private volatile Thread  thread = null;
    private int clientCount = 0;
+   private Hashtable<String,Integer > clientIPs =  new Hashtable<String,Integer >();
+   private int maxConnect = 2;
 
    public ChatServer(int port) {  
       
@@ -73,6 +75,16 @@ public class ChatServer implements Runnable {
       if (pos >= 0)
       {  ChatServerThread toTerminate = clients[pos];
          System.out.println("Removing client thread " + iD + " at " + pos);
+         //remove IP form clientIPs
+         String ip = toTerminate.getIP();
+         int ipCount = clientIPs.get(ip);
+         if(ipCount==0){
+             clientIPs.remove(ip);
+         }else{
+            ipCount--;
+            clientIPs.put(ip,ipCount);
+         }
+
          if (pos < clientCount-1)
             for (int i = pos+1; i < clientCount; i++)
                clients[i-1] = clients[i];
@@ -81,12 +93,35 @@ public class ChatServer implements Runnable {
          {  toTerminate.close(); }
          catch(IOException ioe)
          {  System.out.println("Error closing thread: " + ioe); }
-         toTerminate.stopThread(); }
+         toTerminate.stopThread(); 
+      }
    }
    private void addThread(Socket socket)
    {  if (clientCount < clients.length)
-      {  System.out.println("Client accepted: " + socket);
+      {  
+         //checking connect
+         String ip = socket.getInetAddress().toString();
+         int ipCount =0;
+         if(clientIPs.get(ip)!=null){
+            ipCount = clientIPs.get(ip);
+         }
+         ipCount++;
+         clientIPs.put(ip,ipCount);
+         System.out.println("IP: " + ip + " count :"+ipCount);
+         if(ipCount>maxConnect){
+            System.out.println("Client refused: maximum connection per client :" + maxConnect);
+             try
+            {  socket.close(); } //client will error ????
+            catch(IOException ioe)
+            {  System.out.println("Error closing thread: " + ioe); }; 
+            return;
+         }
+         //end checking connect
+
+         System.out.println("Client accepted: " + socket);
+
          clients[clientCount] = new ChatServerThread(this, socket);
+
          try
          {  clients[clientCount].open(); 
             clients[clientCount].start();  
