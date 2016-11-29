@@ -106,12 +106,13 @@ public class ChatServer implements Runnable {
          if(clientIPs.get(ip)!=null){
             ipCount = clientIPs.get(ip);
          }
-         ipCount++;
-         clientIPs.put(ip,ipCount);
-         System.out.println("IP: " + ip + " count :"+ipCount);
-         if(ipCount>maxConnect){ //too many connection of this client
+         System.out.println("IP: " + ip + " count :"+ipCount+1);
+         if(ipCount+1>maxConnect){ //too many connection of this client
             System.out.println("Client refused: maximum connection per client :" + maxConnect);
          }else{
+
+         	ipCount++;
+         	clientIPs.put(ip,ipCount);
 	         System.out.println("Client accepted: " + socket);
 
 	         clients[clientCount] = new ChatServerThread(this, socket);
