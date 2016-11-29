@@ -84,6 +84,7 @@ public class ChatServer implements Runnable {
             ipCount--;
             clientIPs.put(ip,ipCount);
          }
+         //end remove IP form clientIPs
 
          if (pos < clientCount-1)
             for (int i = pos+1; i < clientCount; i++)
@@ -108,26 +109,22 @@ public class ChatServer implements Runnable {
          ipCount++;
          clientIPs.put(ip,ipCount);
          System.out.println("IP: " + ip + " count :"+ipCount);
-         if(ipCount>maxConnect){
+         if(ipCount>maxConnect){ //too many connection of this client
             System.out.println("Client refused: maximum connection per client :" + maxConnect);
-             try
-            {  socket.close(); } //client will error ????
-            catch(IOException ioe)
-            {  System.out.println("Error closing thread: " + ioe); }; 
-            return;
+         }else{
+	         System.out.println("Client accepted: " + socket);
+
+	         clients[clientCount] = new ChatServerThread(this, socket);
+
+	         try
+	         {  clients[clientCount].open(); 
+	            clients[clientCount].start();  
+	            clientCount++; }
+	         catch(IOException ioe)
+	         {  System.out.println("Error opening thread: " + ioe); } 
+
          }
-         //end checking connect
-
-         System.out.println("Client accepted: " + socket);
-
-         clients[clientCount] = new ChatServerThread(this, socket);
-
-         try
-         {  clients[clientCount].open(); 
-            clients[clientCount].start();  
-            clientCount++; }
-         catch(IOException ioe)
-         {  System.out.println("Error opening thread: " + ioe); } }
+     }
       else
          System.out.println("Client refused: maximum " + clients.length + " reached.");
    }
