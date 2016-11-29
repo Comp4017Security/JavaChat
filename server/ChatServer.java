@@ -12,7 +12,7 @@ public class ChatServer implements Runnable {
    private volatile Thread  thread = null;
    private int clientCount = 0;
    private Hashtable<String,Integer > clientIPs =  new Hashtable<String,Integer >();
-   private int maxConnect = 2;
+   private int maxConnect = 10;
 
    public ChatServer(int port) {  
       
@@ -97,9 +97,10 @@ public class ChatServer implements Runnable {
          toTerminate.stopThread(); 
       }
    }
-   private void addThread(Socket socket)
+   private synchronized void addThread(Socket socket)
    {  if (clientCount < clients.length)
       {  
+       
          //checking connect
          String ip = socket.getInetAddress().toString();
          int ipCount =0;
@@ -116,7 +117,7 @@ public class ChatServer implements Runnable {
 	         System.out.println("Client accepted: " + socket);
 
 	         clients[clientCount] = new ChatServerThread(this, socket);
-
+          
 	         try
 	         {  clients[clientCount].open(); 
 	            clients[clientCount].start();  

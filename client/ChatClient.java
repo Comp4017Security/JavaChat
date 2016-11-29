@@ -2,6 +2,7 @@ import java.net.*;
 import java.io.*;
 import javax.net.ssl.*;
 
+
 public class ChatClient implements Runnable
 {  //private Socket socket              = null;
    private SSLSocket socket = null;
