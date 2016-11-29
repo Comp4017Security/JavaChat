@@ -49,7 +49,8 @@ public class ChatClient implements Runnable
          streamOut.flush();
       } catch (IOException e) {
          // TODO Auto-generated catch block
-         e.printStackTrace();
+         System.out.println("error");
+         //e.printStackTrace();
       }
 
       while (thread == thisThread)
