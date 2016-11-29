@@ -30,6 +30,8 @@ public class ChatClient implements Runnable
 
             SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             socket = (SSLSocket) sslsocketfactory.createSocket(serverName, serverPort);
+            
+
             System.out.println("Connected: " + socket);
 
             start();
@@ -48,7 +50,8 @@ public class ChatClient implements Runnable
          streamOut.flush();
       } catch (IOException e) {
          // TODO Auto-generated catch block
-         e.printStackTrace();
+         System.out.println("error");
+         //e.printStackTrace();
       }
 
       while (thread == thisThread)

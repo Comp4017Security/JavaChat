@@ -12,9 +12,14 @@ public class ChatServer implements Runnable {
    private volatile Thread  thread = null;
    private int clientCount = 0;
    private Hashtable<String,Integer > clientIPs =  new Hashtable<String,Integer >();
+<<<<<<< HEAD
    private int maxConnect = 10;
+=======
+   private int maxConnect = -1;
+>>>>>>> origin/master
 
-   public ChatServer(int port) {  
+   public ChatServer(int port, int limit) {  
+      this.maxConnect = limit;
       
       try {
          
@@ -107,10 +112,26 @@ public class ChatServer implements Runnable {
          if(clientIPs.get(ip)!=null){
             ipCount = clientIPs.get(ip);
          }
+<<<<<<< HEAD
          System.out.println("IP: " + ip + " count :"+ipCount+1);
          if(ipCount+1>maxConnect){ //too many connection of this client
             System.out.println("Client refused: maximum connection per client :" + maxConnect);
          }else{
+=======
+         ipCount++;
+         System.out.println("IP: " + ip + " count :"+ipCount);
+         if(ipCount>maxConnect){
+            System.out.println("Client refused: maximum connection per client :" + maxConnect);
+             try
+            {  socket.close();
+               ipCount--; } //client will error ????
+            catch(IOException ioe)
+            {  System.out.println("Error closing thread: " + ioe); }; 
+            return;
+         }
+         clientIPs.put(ip,ipCount);
+         //end checking connect
+>>>>>>> origin/master
 
          	ipCount++;
          	clientIPs.put(ip,ipCount);
@@ -132,9 +153,9 @@ public class ChatServer implements Runnable {
    }
    public static void main(String args[])
    {  ChatServer server = null;
-      if (args.length != 1)
-         System.out.println("Usage: java ChatServer port");
+      if (args.length != 2)
+         System.out.println("Usage: java ChatServer port limit");
       else
-         server = new ChatServer(Integer.parseInt(args[0]));
+         server = new ChatServer(Integer.parseInt(args[0]),Integer.parseInt(args[1]));
    }
 }
