@@ -11,6 +11,8 @@ import javax.net.ssl.SSLContext;
 import java.security.KeyStore;
 import javax.net.ssl.TrustManagerFactory;
 
+import java.util.Arrays;
+
 public class ChatServer implements Runnable {
    
    private ChatServerThread clients[] = new ChatServerThread[50];
@@ -130,6 +132,7 @@ public class ChatServer implements Runnable {
       {  
        
          //checking connect
+         System.out.println( ((SSLSocket)socket).getHandshakeSession().getPeerHost());
          String ip = socket.getInetAddress().toString();
          int ipCount =0;
          if(clientIPs.get(ip)!=null){
@@ -142,21 +145,8 @@ public class ChatServer implements Runnable {
          }else{
          ipCount++;
          System.out.println("IP: " + ip + " count :"+ipCount);
-         if(ipCount>maxConnect){
-            System.out.println("Client refused: maximum connection per client :" + maxConnect);
-             try
-            {  socket.close();
-               ipCount--; } //client will error ????
-            catch(IOException ioe)
-            {  System.out.println("Error closing thread: " + ioe); }; 
-            return;
-         }
+        
          clientIPs.put(ip,ipCount);
-         //end checking connect
-// origin/master
-
-         	ipCount++;
-         	clientIPs.put(ip,ipCount);
 	         System.out.println("Client accepted: " + socket);
 
 	         clients[clientCount] = new ChatServerThread(this, socket);
