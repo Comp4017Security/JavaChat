@@ -85,6 +85,7 @@ public class ChatServer implements Runnable {
       ChatServerThread targetClient = clients[findClient(iD)];
       if (targetClient.username.equals("")) {
          targetClient.username = input + iD;
+         System.out.println(targetClient.getCertName() + " is: " + targetClient.username);
       }
       else if (input.equals(".bye"))
       {  targetClient.send(".bye");
