@@ -43,7 +43,7 @@ public class ChatServer implements Runnable {
          System.out.println("Binding to port " + port + ", please wait  ...");
          //server = new ServerSocket(port); 
          
-         SSLServerSocketFactory sslserversocketfactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+         SSLServerSocketFactory sslserversocketfactory =  ctx.getServerSocketFactory();
          sslserver = (SSLServerSocket) sslserversocketfactory.createServerSocket(port);
 
          System.out.println("Server started: " + sslserver);

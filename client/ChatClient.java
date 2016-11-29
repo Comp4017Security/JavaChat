@@ -42,7 +42,7 @@ public class ChatClient implements Runnable
 
          ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
-            SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            SSLSocketFactory sslsocketfactory = ctx.getSocketFactory();
             socket = (SSLSocket) sslsocketfactory.createSocket(serverName, serverPort);
             
 
