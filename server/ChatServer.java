@@ -1,15 +1,8 @@
 import java.net.*;
 import java.io.*;
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocket;
+import javax.net.ssl.*;
 import java.util.Hashtable;
-
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 import java.security.KeyStore;
-import javax.net.ssl.TrustManagerFactory;
 
 import java.util.Arrays;
 
@@ -20,7 +13,7 @@ public class ChatServer implements Runnable {
    private SSLServerSocket sslserver;
    private volatile Thread  thread = null;
    private int clientCount = 0;
-   private Hashtable<String,Integer > clientIPs =  new Hashtable<String,Integer >();
+   private Hashtable<String,Integer > clientCertNames =  new Hashtable<String,Integer >();
 
    private int maxConnect = -1;
 
@@ -106,13 +99,13 @@ public class ChatServer implements Runnable {
       {  ChatServerThread toTerminate = clients[pos];
          System.out.println("Removing client thread " + iD + " at " + pos);
          //remove IP form clientIPs
-         String ip = toTerminate.getIP();
-         int ipCount = clientIPs.get(ip);
+         String certName = toTerminate.getCertName();
+         int ipCount = clientCertNames.get(certName);
          if(ipCount==0){
-             clientIPs.remove(ip);
+          clientCertNames.remove(certName);
          }else{
             ipCount--;
-            clientIPs.put(ip,ipCount);
+            clientCertNames.put(certName,ipCount);
          }
          //end remove IP form clientIPs
 
@@ -132,31 +125,36 @@ public class ChatServer implements Runnable {
       {  
        
          //checking connect
-         System.out.println( ((SSLSocket)socket).getHandshakeSession().getPeerHost());
-         String ip = socket.getInetAddress().toString();
-         int ipCount =0;
-         if(clientIPs.get(ip)!=null){
-            ipCount = clientIPs.get(ip);
-         }
+      String certName = null;
+         try{
+          certName = ((SSLSocket)socket).getSession().getPeerPrincipal().getName();
+         } catch (SSLPeerUnverifiedException e){
 
-         System.out.println("IP: " + ip + " count :"+ipCount+1);
-         if(ipCount+1>maxConnect){ //too many connection of this client
+            System.out.println("unverified");
+         }
+         //String ip = socket.getInetAddress().toString();
+         int certNamesCount =0;
+         if(clientCertNames.get(certName)!=null){
+          certNamesCount = clientCertNames.get(certName);
+         }
+         
+         if(certNamesCount+1>maxConnect){ //too many connection of this client
             System.out.println("Client refused: maximum connection per client :" + maxConnect);
          }else{
-         ipCount++;
-         System.out.println("IP: " + ip + " count :"+ipCount);
+          certNamesCount++;
+         System.out.println("Count of this connected user:" + certNamesCount);
         
-         clientIPs.put(ip,ipCount);
-	         System.out.println("Client accepted: " + socket);
+         clientCertNames.put(certName,certNamesCount);
+            System.out.println("Client accepted: " + socket);
 
-	         clients[clientCount] = new ChatServerThread(this, socket);
+            clients[clientCount] = new ChatServerThread(this, socket, certName);
           
-	         try
-	         {  clients[clientCount].open(); 
-	            clients[clientCount].start();  
-	            clientCount++; }
-	         catch(IOException ioe)
-	         {  System.out.println("Error opening thread: " + ioe); } 
+            try
+            {  clients[clientCount].open(); 
+               clients[clientCount].start();  
+               clientCount++; }
+            catch(IOException ioe)
+            {  System.out.println("Error opening thread: " + ioe); } 
 
          }
      }

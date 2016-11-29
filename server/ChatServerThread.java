@@ -13,15 +13,15 @@ public class ChatServerThread extends Thread
    private DataOutputStream streamOut = null;
    private volatile Thread  thread    = null;
    public String username = "";
-   private String IP = "";
+   private String certName = "";
    private Timestamp activeTime ;
 
-   public ChatServerThread(ChatServer _server, Socket _socket)
+   public ChatServerThread(ChatServer _server, Socket _socket, String _certName)
    {  super();
       server = _server;
       socket = _socket;
       ID     = this.getId();
-      IP     = socket.getInetAddress().toString();
+      certName     = _certName;
       activeTime =  new Timestamp(System.currentTimeMillis());
    }
    public void send(String msg)
@@ -38,8 +38,8 @@ public class ChatServerThread extends Thread
    public long getID()
    {  return ID;
    }
-    public String getIP()
-   {  return IP;
+    public String getCertName()
+   {  return certName;
    }
    public void run()
    {  System.out.println("Server Thread " + ID + " running.");

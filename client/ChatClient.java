@@ -56,9 +56,9 @@ public class ChatClient implements Runnable
          catch(UnknownHostException uhe)
          {  System.out.println("Host unknown: " + uhe.getMessage()); }
          catch(IOException ioe)
-         {  System.out.println("Unexpected exception: " + ioe.getMessage()); }
+         {  System.out.println("Unexpected ioexception: " + ioe.getMessage()); }
          catch(Exception e){
-            
+            System.out.println("Unexpected exception: " + e.getMessage()); 
          }
    }
    
