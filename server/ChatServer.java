@@ -22,19 +22,23 @@ public class ChatServer implements Runnable {
 
    private int maxConnect = -1;
 
-   private String SERVER_KEY_STORE_PASSWORD  ="111111";
-   private String SERVER_TRUST_KEY_STORE_PASSWORD  ="111111";
+   private String SERVER_KEY_STORE_PASSWORD ;
+   private String SERVER_TRUST_KEY_STORE_PASSWORD ;
 
    public ChatServer(int port, int limit) {  
       this.maxConnect = limit;
       
+       Console console = System.console();
+     
       try {
          SSLContext ctx = SSLContext.getInstance("SSL");
          KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
          TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
          KeyStore ks = KeyStore.getInstance("JKS");
          KeyStore tks = KeyStore.getInstance("JKS");
+         SERVER_KEY_STORE_PASSWORD = new String(console.readPassword("Please enter your KEY STORE password: "));
          ks.load(new FileInputStream("mySrvKeystore"), SERVER_KEY_STORE_PASSWORD.toCharArray());
+         SERVER_TRUST_KEY_STORE_PASSWORD = new String(console.readPassword("Please enter your TRUST KEY STORE password: "));
          tks.load(new FileInputStream("mySrvTruststore"), SERVER_TRUST_KEY_STORE_PASSWORD.toCharArray());
          kmf.init(ks, SERVER_KEY_STORE_PASSWORD.toCharArray());
          tmf.init(tks);
@@ -45,7 +49,7 @@ public class ChatServer implements Runnable {
          
          SSLServerSocketFactory sslserversocketfactory =  ctx.getServerSocketFactory();
          sslserver = (SSLServerSocket) sslserversocketfactory.createServerSocket(port);
-
+         sslserver.setNeedClientAuth(true);
          System.out.println("Server started: " + sslserver);
          start();
       } catch(IOException ioe) {

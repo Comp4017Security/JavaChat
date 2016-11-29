@@ -10,8 +10,8 @@ public class ChatClient implements Runnable
    private BufferedReader   console   = null;
    private DataOutputStream streamOut = null;
    private ChatClientThread client    = null;
-   private String CLIENT_KEY_STORE_PASSWORD = "111111";
-   private String CLIENT_TRUST_KEY_STORE_PASSWORD = "111111";
+   private String CLIENT_KEY_STORE_PASSWORD;
+   private String CLIENT_TRUST_KEY_STORE_PASSWORD;
    private String username = "";
 
    public ChatClient(String serverName, int serverPort, String username)
@@ -26,6 +26,7 @@ public class ChatClient implements Runnable
    
    private void create(String serverName, int serverPort) {
       System.out.println("Establishing connection. Please wait ...");
+       Console console = System.console();
          try
          {  //socket = new Socket(serverName, serverPort);
 
@@ -34,7 +35,9 @@ public class ChatClient implements Runnable
          TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
          KeyStore ks = KeyStore.getInstance("JKS");
          KeyStore tks = KeyStore.getInstance("JKS");
+         CLIENT_KEY_STORE_PASSWORD = new String(console.readPassword("Please enter your KEY STORE password: "));
          ks.load(new FileInputStream("myCliKeystore"), CLIENT_KEY_STORE_PASSWORD.toCharArray());
+         CLIENT_TRUST_KEY_STORE_PASSWORD = new String(console.readPassword("Please enter your TRUST KEY STORE password: "));
          tks.load(new FileInputStream("myCliTruststore"), CLIENT_TRUST_KEY_STORE_PASSWORD.toCharArray());
          kmf.init(ks, CLIENT_KEY_STORE_PASSWORD.toCharArray());
          tmf.init(tks);
