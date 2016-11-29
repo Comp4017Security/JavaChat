@@ -1,7 +1,7 @@
 import java.net.*;
 import java.io.*;
 import javax.net.ssl.*;
-
+import java.security.KeyStore;
 
 public class ChatClient implements Runnable
 {  //private Socket socket              = null;
@@ -10,7 +10,8 @@ public class ChatClient implements Runnable
    private BufferedReader   console   = null;
    private DataOutputStream streamOut = null;
    private ChatClientThread client    = null;
-   
+   private String CLIENT_KEY_STORE_PASSWORD = "111111";
+   private String CLIENT_TRUST_KEY_STORE_PASSWORD = "111111";
    private String username = "";
 
    public ChatClient(String serverName, int serverPort, String username)
@@ -28,6 +29,19 @@ public class ChatClient implements Runnable
          try
          {  //socket = new Socket(serverName, serverPort);
 
+         SSLContext ctx = SSLContext.getInstance("SSL");
+         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+         TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+         KeyStore ks = KeyStore.getInstance("JKS");
+         KeyStore tks = KeyStore.getInstance("JKS");
+         ks.load(new FileInputStream("myCliKeystore"), CLIENT_KEY_STORE_PASSWORD.toCharArray());
+         tks.load(new FileInputStream("myCliTruststore"), CLIENT_TRUST_KEY_STORE_PASSWORD.toCharArray());
+         kmf.init(ks, CLIENT_KEY_STORE_PASSWORD.toCharArray());
+         tmf.init(tks);
+          
+
+         ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+
             SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             socket = (SSLSocket) sslsocketfactory.createSocket(serverName, serverPort);
             
@@ -40,6 +54,9 @@ public class ChatClient implements Runnable
          {  System.out.println("Host unknown: " + uhe.getMessage()); }
          catch(IOException ioe)
          {  System.out.println("Unexpected exception: " + ioe.getMessage()); }
+         catch(Exception e){
+            
+         }
    }
    
    public void run()

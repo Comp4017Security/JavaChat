@@ -4,6 +4,13 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import java.util.Hashtable;
+
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import java.security.KeyStore;
+import javax.net.ssl.TrustManagerFactory;
+
 public class ChatServer implements Runnable {
    
    private ChatServerThread clients[] = new ChatServerThread[50];
@@ -12,16 +19,26 @@ public class ChatServer implements Runnable {
    private volatile Thread  thread = null;
    private int clientCount = 0;
    private Hashtable<String,Integer > clientIPs =  new Hashtable<String,Integer >();
-<<<<<<< HEAD
-   private int maxConnect = 10;
-=======
+
    private int maxConnect = -1;
->>>>>>> origin/master
+
+   private String SERVER_KEY_STORE_PASSWORD  ="111111";
+   private String SERVER_TRUST_KEY_STORE_PASSWORD  ="111111";
 
    public ChatServer(int port, int limit) {  
       this.maxConnect = limit;
       
       try {
+         SSLContext ctx = SSLContext.getInstance("SSL");
+         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+         TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+         KeyStore ks = KeyStore.getInstance("JKS");
+         KeyStore tks = KeyStore.getInstance("JKS");
+         ks.load(new FileInputStream("mySrvKeystore"), SERVER_KEY_STORE_PASSWORD.toCharArray());
+         tks.load(new FileInputStream("mySrvTruststore"), SERVER_TRUST_KEY_STORE_PASSWORD.toCharArray());
+         kmf.init(ks, SERVER_KEY_STORE_PASSWORD.toCharArray());
+         tmf.init(tks);
+         ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
          
          System.out.println("Binding to port " + port + ", please wait  ...");
          //server = new ServerSocket(port); 
@@ -33,6 +50,8 @@ public class ChatServer implements Runnable {
          start();
       } catch(IOException ioe) {
          System.out.println("Can not bind to port " + port + ": " + ioe.getMessage());
+      }catch(Exception e){
+         
       }
    }
    public void run()
@@ -112,12 +131,11 @@ public class ChatServer implements Runnable {
          if(clientIPs.get(ip)!=null){
             ipCount = clientIPs.get(ip);
          }
-<<<<<<< HEAD
+
          System.out.println("IP: " + ip + " count :"+ipCount+1);
          if(ipCount+1>maxConnect){ //too many connection of this client
             System.out.println("Client refused: maximum connection per client :" + maxConnect);
          }else{
-=======
          ipCount++;
          System.out.println("IP: " + ip + " count :"+ipCount);
          if(ipCount>maxConnect){
@@ -131,7 +149,7 @@ public class ChatServer implements Runnable {
          }
          clientIPs.put(ip,ipCount);
          //end checking connect
->>>>>>> origin/master
+// origin/master
 
          	ipCount++;
          	clientIPs.put(ip,ipCount);
