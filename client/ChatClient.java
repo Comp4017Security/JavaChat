@@ -29,6 +29,8 @@ public class ChatClient implements Runnable
 
             SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             socket = (SSLSocket) sslsocketfactory.createSocket(serverName, serverPort);
+            
+
             System.out.println("Connected: " + socket);
 
             start();
